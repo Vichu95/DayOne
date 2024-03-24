@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start</title>
+</head>
+<body>
+  <button id="openFolderButton">Open Folder</button>
+  <button id="openLinkButton">Open Link</button>
+
+  <script>
+    document.getElementById('openFolderButton').addEventListener('click', () => {
+      window.api.openFolder();
+    });
+
+    document.getElementById('openLinkButton').addEventListener('click', () => {
+      window.api.openLink();
+    });
+  </script>
+</body>
+</html>
