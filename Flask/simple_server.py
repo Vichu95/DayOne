@@ -1,22 +1,22 @@
-from flask import Flask
-
 import os
- 
+from flask import Flask, render_template
+
 app = Flask(__name__)
 
-@app.route('/trigger_action')
-def trigger_action():
-    # Execute action based on the received request
-    # For example, open a link or execute a command
-    # Replace this with your desired action
-    
-    
-    # running other file using run()
-    os.system("python helloworld.py")
-    
-    
-    
-    return 'Action triggered successfully'
+@app.route('/')
+def index():
+   return render_template('index.html')
+
+@app.route('/open_link')
+def open_link():
+   # Code to open a link on your laptop
+   return 'Link opened successfully'
+
+@app.route('/run_script')
+def run_script():
+   # Code to run a script on your laptop
+   os.system("python helloworld.py")
+   return 'Script executed successfully'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)  # Run the server on all available interfaces
+   app.run(host='0.0.0.0', port=5000)
