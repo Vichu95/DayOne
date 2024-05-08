@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control tmux Session</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Control tmux Session</h1>
+    
+    <form id="startForm" action="/start_session" method="GET">
+        <button type="submit">Start Session</button>
+    </form>
+    
+    <form id="stopForm" action="/stop_session" method="GET">
+        <button type="submit">Stop Session</button>
+    </form>
+
+    <form id="statusForm" action="/status" method="GET">
+        <button type="submit">Check Status</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        // Function to handle form submission and display response
+        function handleSubmit(event) {
+            event.preventDefault();
+            var form = event.target;
+            var action = form.getAttribute('action');
+            fetch(action)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('response').innerText = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Attach event listeners to forms
+        document.getElementById('startForm').addEventListener('submit', handleSubmit);
+        document.getElementById('stopForm').addEventListener('submit', handleSubmit);
+        document.getElementById('statusForm').addEventListener('submit', handleSubmit);
+    </script>
+</body>
+</html>
+
