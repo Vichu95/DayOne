@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigger Value</title>
+</head>
+<body>
+    <h1>Trigger Value</h1>
+    <button id="triggerButton" onclick="triggerValue()">Trigger Value</button>
+
+    <script>
+        function triggerValue() {
+            fetch('/trigger_value', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ value: 'Fixed value to be triggered' })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Value triggered successfully");
+                } else {
+                    console.error("Failed to trigger value");
+                }
+            })
+            .catch(error => {
+                console.error("Error triggering value:", error);
+            });
+        }
+    </script>
+</body>
+</html>
+
