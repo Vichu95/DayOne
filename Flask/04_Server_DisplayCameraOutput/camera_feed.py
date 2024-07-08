@@ -12,7 +12,7 @@ def capture_camera_and_send():
             break
 		
         cv2.imshow('Camera Feed', frame)  # Display the frame
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to quit
+        if cv2.waitKey(4) & 0xFF == ord('q'):  # Press 'q' to quit
             break
             
         # Encode the frame as JPEG
@@ -21,7 +21,7 @@ def capture_camera_and_send():
 
         # Send the frame to the Flask server
         try:
-            response = requests.post('http://127.0.0.1:5000/update_frame', data=frame_bytes)
+            response = requests.post('http://192.168.31.222:5000/update_frame', data=frame_bytes)
             if response.status_code != 200:
                 print("Failed to send frame to server")
         except requests.exceptions.RequestException as e:
