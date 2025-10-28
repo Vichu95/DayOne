@@ -1,0 +1,168 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "IntroToQML",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML-Debug-d0ce97e4dd096566a082.json",
+					"name" : "IntroToQML",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_autogen-Debug-0b3778c088d7909bbae6.json",
+					"name" : "IntroToQML_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_autogen_timestamp_deps-Debug-8ca704015b344dc6baa6.json",
+					"name" : "IntroToQML_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_qmlimportscan-Debug-d6d228d7acf242e31d73.json",
+					"name" : "IntroToQML_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_qmllint-Debug-26a6f55649efc2949988.json",
+					"name" : "IntroToQML_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_qmllint_json-Debug-7a0db432b99beb25fe6c.json",
+					"name" : "IntroToQML_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_qmllint_module-Debug-77560a783727d22980d5.json",
+					"name" : "IntroToQML_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_qmltyperegistration-Debug-bf4a4829ed141b6381d8.json",
+					"name" : "IntroToQML_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IntroToQML_tooling::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IntroToQML_tooling-Debug-53979064a5d316d08557.json",
+					"name" : "IntroToQML_tooling",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Debug-c04c0696ea6d7237728c.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Debug-dce7d89072670fc58f13.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Debug-e17d2cc346f1f4dc8b5a.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-134e22737213c1ac1f16.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug",
+		"source" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

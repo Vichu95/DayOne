@@ -1,0 +1,14 @@
+-rootPath
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax
+-cmake-output
+-output-file
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/qml_imports/IntroToQML_build.cmake
+-importPath
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/Main
+-importPath
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug
+-importPath
+C:/Qt/6.7.2/msvc2019_64/./qml
+-qrcFiles
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/rcc/qmake_Main.qrc
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/rcc/IntroToQML_raw_qml_0.qrc

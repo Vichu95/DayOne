@@ -1,0 +1,25 @@
+{
+	"BUILD_DIR" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/IntroToQML_autogen",
+	"CMAKE_BINARY_DIR" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties",
+	"CMAKE_SOURCE_DIR" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Ninja",
+	"INCLUDE_DIR" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/IntroToQML_autogen/include",
+	"INPUTS" : 
+	[
+		"D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/Images/Qt-Wheel-Car.jpg"
+	],
+	"LOCK_FILE" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/CMakeFiles/IntroToQML_autogen.dir/AutoRcc_resources_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "--no-zstd", "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "C:/Qt/6.7.2/msvc2019_64/./bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/CMakeFiles/IntroToQML_autogen.dir/AutoRcc_resources_EWIEGA46WW_Used.txt",
+	"SOURCE" : "D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/resources.qrc",
+	"USE_BETTER_GRAPH" : false,
+	"VERBOSITY" : 0
+}

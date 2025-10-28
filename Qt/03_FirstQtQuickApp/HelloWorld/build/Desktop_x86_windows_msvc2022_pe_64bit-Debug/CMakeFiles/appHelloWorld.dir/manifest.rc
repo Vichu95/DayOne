@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "D:/Learn/Projects/DayOne/DayOne/Qt/03_FirstQtQuickApp/HelloWorld/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/CMakeFiles/appHelloWorld.dir/embed.manifest"

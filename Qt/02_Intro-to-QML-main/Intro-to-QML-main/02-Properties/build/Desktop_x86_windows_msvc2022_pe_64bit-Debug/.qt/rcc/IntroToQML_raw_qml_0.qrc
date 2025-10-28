@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/qt/qml/Main/">
+    <file alias="Main.qml">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/Main.qml</file>
+    <file alias="resources.qrc">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/02-Properties/resources.qrc</file>
+  </qresource>
+</RCC>
+

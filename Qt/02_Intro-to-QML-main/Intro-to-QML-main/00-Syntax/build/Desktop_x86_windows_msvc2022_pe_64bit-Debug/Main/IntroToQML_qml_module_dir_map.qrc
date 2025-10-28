@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/qt/qml/Main">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/00-Syntax/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/Main</file>
+
+  </qresource>
+</RCC>

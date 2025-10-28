@@ -1,0 +1,5 @@
+module Main
+typeinfo IntroToQML.qmltypes
+prefer :/qt/qml/Main/
+Main 254.0 Main.qml
+

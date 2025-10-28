@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/qt/qml/Main/">
+    <file alias="Main.qml">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/Main.qml</file>
+    <file alias="script.mjs">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/script.mjs</file>
+    <file alias="square.mjs">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/square.mjs</file>
+  </qresource>
+</RCC>
+

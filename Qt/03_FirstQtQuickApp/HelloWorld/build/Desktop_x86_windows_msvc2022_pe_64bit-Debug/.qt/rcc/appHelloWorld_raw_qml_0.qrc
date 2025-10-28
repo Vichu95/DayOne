@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/HelloWorld/">
+    <file alias="Main.qml">D:/Learn/Projects/DayOne/DayOne/Qt/03_FirstQtQuickApp/HelloWorld/Main.qml</file>
+  </qresource>
+</RCC>
+

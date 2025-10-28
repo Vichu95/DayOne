@@ -1,0 +1,14 @@
+--bare
+-I
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug
+-I
+C:/Qt/6.7.2/msvc2019_64/./qml
+--resource
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/rcc/qmake_Main.qrc
+--resource
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/rcc/IntroToQML_raw_qml_0.qrc
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/Main.qml
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/PassByValue.qml
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/PassByReference.qml
+--json
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/IntroToQML_qmllint.json

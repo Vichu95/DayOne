@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/qt/qml/Main/">
+    <file alias="Main.qml">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/Main.qml</file>
+    <file alias="PassByValue.qml">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/PassByValue.qml</file>
+    <file alias="PassByReference.qml">D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/05-Value-Types/PassByReference.qml</file>
+  </qresource>
+</RCC>
+

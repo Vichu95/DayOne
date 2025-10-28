@@ -1,0 +1,10 @@
+-I
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug
+-I
+C:/Qt/6.7.2/msvc2019_64/./qml
+--resource
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/rcc/qmake_Main.qrc
+--resource
+D:/Learn/Projects/DayOne/DayOne/Qt/02_Intro-to-QML-main/Intro-to-QML-main/07-Import-Statements/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/.qt/rcc/IntroToQML_raw_qml_0.qrc
+--module
+Main

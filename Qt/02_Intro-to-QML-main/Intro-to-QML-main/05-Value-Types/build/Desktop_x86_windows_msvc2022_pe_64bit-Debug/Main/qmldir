@@ -1,0 +1,7 @@
+module Main
+typeinfo IntroToQML.qmltypes
+prefer :/qt/qml/Main/
+Main 254.0 Main.qml
+PassByValue 254.0 PassByValue.qml
+PassByReference 254.0 PassByReference.qml
+
