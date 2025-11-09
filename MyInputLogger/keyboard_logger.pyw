@@ -15,6 +15,7 @@ TOGGLE_KEY = pynput.keyboard.Key.f12
 FLUSH_TRIGGERS = {'.', ',', '\n', '\t'}
 FLUSH_BUFFER_SIZE = 50
 
+# The one and only blocklist file
 BLOCKLIST_FILE = 'my_blocklist.txt'
 # --- END CUSTOMIZATION ---
 
@@ -30,8 +31,9 @@ current_icon_state = 'green'
 last_debugged_title = ""
 current_window_title = ""
 current_process_name = "" 
-dynamic_keyword_blocklist = set()
-dynamic_exact_blocklist = set()
+
+# NEW: We only have one list now
+dynamic_blocklist = set()
 
 # --- DEBUG LOGGER SETUP ---
 DEBUG_LOG_FILE = 'debug.log'
@@ -40,7 +42,7 @@ if DEBUG_MODE:
         level=logging.DEBUG,
         format='%(asctime)s - %(message)s',
         filename=DEBUG_LOG_FILE,
-        filemode='w' # 'w' = Overwrite log on each start
+        filemode='w'
     )
     logging.info("Debug Logger Started.")
 
@@ -82,52 +84,45 @@ def flush_all_buffers():
         for process_name in app_buffers.keys():
             flush_buffer_to_file(process_name)
 
-# --- BLOCKLIST FUNCTIONS ---
+# --- BLOCKLIST FUNCTIONS (MODIFIED) ---
 def load_dynamic_blocklist():
-    """Loads and parses the my_blocklist.txt file into memory."""
-    global dynamic_keyword_blocklist, dynamic_exact_blocklist
+    """Loads all lines from my_blocklist.txt into one set."""
+    global dynamic_blocklist
     
-    dynamic_keyword_blocklist.clear()
-    dynamic_exact_blocklist.clear()
+    dynamic_blocklist.clear()
     
     try:
         if not os.path.exists(BLOCKLIST_FILE):
             if DEBUG_MODE: logging.info(f"'{BLOCKLIST_FILE}' not found, creating with defaults.")
-            default_keywords = [
+            default_rules = [
                 '# This is your blocklist. Lines starting with # are comments.',
-                '# Add "keyword:word" to block any title containing "word".',
-                '# Add an exact title (like "My Bank - Login") to block just that window.',
-                'keyword:password',
-                'keyword:passwort',
-                'keyword:login',
-                'keyword:log in',
-                'keyword:anmelden',
-                'keyword:sign in',
-                'keyword:email',
-                'keyword:e-mail',
-                'keyword:secure input',
-                'keyword:bank',
-                'keyword:admin',
-                'keyword:keyring'
+                '# Any window title *containing* a line from this file will be blocked.',
+                '# Add single words (like "password") or full titles.',
+                'password',
+                'passwort',
+                'login',
+                'log in',
+                'anmelden',
+                'sign in',
+                'email',
+                'e-mail',
+                'secure input',
+                'bank',
+                'admin',
+                'keyring'
             ]
             with open(BLOCKLIST_FILE, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(default_keywords))
+                f.write('\n'.join(default_rules))
 
         with open(BLOCKLIST_FILE, 'r', encoding='utf-8') as f:
             for line in f:
-                line = line.strip()
+                line = line.strip().lower() # Read all as lowercase
                 if not line or line.startswith('#'):
                     continue
-                
-                if line.startswith('keyword:'):
-                    keyword = line.split(':', 1)[1].strip().lower()
-                    if keyword:
-                        dynamic_keyword_blocklist.add(keyword)
-                else:
-                    dynamic_exact_blocklist.add(line)
+                dynamic_blocklist.add(line)
         
         if DEBUG_MODE:
-            logging.info(f"Loaded {len(dynamic_keyword_blocklist)} keywords and {len(dynamic_exact_blocklist)} exact titles.")
+            logging.info(f"Loaded {len(dynamic_blocklist)} blocklist keywords.")
             
     except Exception as e:
         if DEBUG_MODE: logging.error(f"Failed to load dynamic blocklist: {e}")
@@ -144,17 +139,18 @@ def get_active_window_info():
     except Exception as e:
         return None, None
 
+# --- IS_WINDOW_BLOCKED (MODIFIED) ---
 def is_window_blocked(window_title):
-    global dynamic_keyword_blocklist, dynamic_exact_blocklist
+    """Checks if the title contains any line from the blocklist."""
+    global dynamic_blocklist
     
     if not window_title:
         return True, "No Title"
         
-    if window_title in dynamic_exact_blocklist:
-        return True, f"Exact: '{window_title}'"
-
     title_lower = window_title.lower()
-    for keyword in dynamic_keyword_blocklist:
+
+    # The one, simple check:
+    for keyword in dynamic_blocklist:
         if keyword in title_lower:
             return True, f"Keyword: '{keyword}'"
             
@@ -260,8 +256,10 @@ def open_debug_log(item):
         try: os.startfile(DEBUG_LOG_FILE)
         except Exception as e: logging.error(f"Could not open debug log: {e}")
 
+# --- BLOCKLIST MENU FUNCTIONS (MODIFIED) ---
 def block_current_window(item):
-    global current_window_title, current_process_name, dynamic_exact_blocklist, app_buffers, buffer_lock
+    """Adds the current window's exact title to the blocklist file."""
+    global current_window_title, current_process_name, dynamic_blocklist, app_buffers, buffer_lock
     
     title_to_block = current_window_title
     proc_to_clear = current_process_name
@@ -270,15 +268,18 @@ def block_current_window(item):
         if DEBUG_MODE: logging.warning("Block request: No title found.")
         return
         
-    if title_to_block in dynamic_exact_blocklist:
-        if DEBUG_MODE: logging.info(f"Block request: '{title_to_block}' is already blocked.")
+    # Check the in-memory list (we must lowercase the title to check)
+    if title_to_block.lower() in dynamic_blocklist:
+        if DEBUG_MODE: logging.info(f"Block request: '{title_to_block}' is already in the list.")
         return
         
     try:
+        # Add the exact title to the file (it will be lowercased on next load)
         with open(BLOCKLIST_FILE, 'a', encoding='utf-8') as f:
             f.write(f"\n{title_to_block}")
         
-        dynamic_exact_blocklist.add(title_to_block)
+        # Add the lowercased version to the in-memory set
+        dynamic_blocklist.add(title_to_block.lower())
         
         with buffer_lock:
             if proc_to_clear and proc_to_clear in app_buffers:
@@ -300,15 +301,14 @@ def open_blocklist_file(item):
     except Exception as e:
         if DEBUG_MODE: logging.error(f"Could not open blocklist file: {e}")
 
-# ***********************************
-# *** NEW FUNCTION ***
-# ***********************************
 def reload_blocklist(item):
     """Reloads the blocklist file from disk."""
     if DEBUG_MODE: logging.info("User requested blocklist reload.")
     load_dynamic_blocklist()
+    # Force an update on the current window
+    global last_debugged_title
+    last_debugged_title = "" 
     if icon: icon.update_menu()
-# ***********************************
 
 def on_quit():
     if DEBUG_MODE: logging.info("Quit requested. Stopping...")
@@ -324,7 +324,6 @@ if __name__ == "__main__":
     listener_thread = threading.Thread(target=start_listener_thread, daemon=True)
     listener_thread.start()
 
-    # --- MENU IS UPDATED ---
     menu_items = [
         pystray.MenuItem(get_status_text, None, enabled=False),
         pystray.Menu.SEPARATOR,
@@ -332,7 +331,7 @@ if __name__ == "__main__":
         pystray.Menu.SEPARATOR,
         pystray.MenuItem("Block Current Window", block_current_window),
         pystray.MenuItem("Open Blocklist File", open_blocklist_file),
-        pystray.MenuItem("Reload Blocklist", reload_blocklist), # <-- NEW
+        pystray.MenuItem("Reload Blocklist", reload_blocklist),
     ]
     if DEBUG_MODE:
         menu_items.extend([
@@ -344,12 +343,11 @@ if __name__ == "__main__":
         pystray.MenuItem("Quit", on_quit)
     ])
     menu = pystray.Menu(*menu_items)
-    # --- END MENU ---
 
     icon = pystray.Icon(
-        'stateful_recorder_v13',
+        'stateful_recorder_v15',
         icon=create_image('green'),
-        title="Stateful Recorder (v13)",
+        title="Stateful Recorder (v15-Simple)",
         menu=menu
     )
 
