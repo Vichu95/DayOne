@@ -1,0 +1,54 @@
+2025-11-09 10:05:13,540 - Debug Logger Started.
+2025-11-09 10:05:13,543 - --- Logger Started ---
+2025-11-09 10:05:13,778 - Importing BlpImagePlugin
+2025-11-09 10:05:13,797 - Importing BmpImagePlugin
+2025-11-09 10:05:13,798 - Importing BufrStubImagePlugin
+2025-11-09 10:05:13,814 - Importing CurImagePlugin
+2025-11-09 10:05:13,938 - Importing DcxImagePlugin
+2025-11-09 10:05:14,014 - Importing DdsImagePlugin
+2025-11-09 10:05:14,030 - Importing EpsImagePlugin
+2025-11-09 10:05:14,080 - Importing FitsImagePlugin
+2025-11-09 10:05:14,096 - Importing FitsStubImagePlugin
+2025-11-09 10:05:14,111 - Importing FliImagePlugin
+2025-11-09 10:05:14,125 - Importing FpxImagePlugin
+2025-11-09 10:05:14,141 - Image: failed to import FpxImagePlugin: No module named 'olefile'
+2025-11-09 10:05:14,141 - Importing FtexImagePlugin
+2025-11-09 10:05:14,164 - Importing GbrImagePlugin
+2025-11-09 10:05:14,182 - Importing GifImagePlugin
+2025-11-09 10:05:14,182 - Importing GribStubImagePlugin
+2025-11-09 10:05:14,199 - Importing Hdf5StubImagePlugin
+2025-11-09 10:05:14,216 - Importing IcnsImagePlugin
+2025-11-09 10:05:14,268 - Importing IcoImagePlugin
+2025-11-09 10:05:14,283 - Importing ImImagePlugin
+2025-11-09 10:05:14,298 - Importing ImtImagePlugin
+2025-11-09 10:05:14,313 - Importing IptcImagePlugin
+2025-11-09 10:05:14,329 - Importing JpegImagePlugin
+2025-11-09 10:05:14,330 - Importing Jpeg2KImagePlugin
+2025-11-09 10:05:14,330 - Importing McIdasImagePlugin
+2025-11-09 10:05:14,351 - Importing MicImagePlugin
+2025-11-09 10:05:14,370 - Image: failed to import MicImagePlugin: No module named 'olefile'
+2025-11-09 10:05:14,370 - Importing MpegImagePlugin
+2025-11-09 10:05:14,385 - Importing MpoImagePlugin
+2025-11-09 10:05:14,480 - Importing MspImagePlugin
+2025-11-09 10:05:14,497 - Importing PalmImagePlugin
+2025-11-09 10:05:14,515 - Importing PcdImagePlugin
+2025-11-09 10:05:14,532 - Importing PcxImagePlugin
+2025-11-09 10:05:14,533 - Importing PdfImagePlugin
+2025-11-09 10:05:14,588 - Importing PixarImagePlugin
+2025-11-09 10:05:14,609 - Importing PngImagePlugin
+2025-11-09 10:05:14,609 - Importing PpmImagePlugin
+2025-11-09 10:05:14,609 - Importing PsdImagePlugin
+2025-11-09 10:05:14,629 - Importing QoiImagePlugin
+2025-11-09 10:05:14,646 - Importing SgiImagePlugin
+2025-11-09 10:05:14,663 - Importing SpiderImagePlugin
+2025-11-09 10:05:14,681 - Importing SunImagePlugin
+2025-11-09 10:05:14,696 - Importing TgaImagePlugin
+2025-11-09 10:05:14,714 - Importing TiffImagePlugin
+2025-11-09 10:05:14,714 - Importing WebPImagePlugin
+2025-11-09 10:05:14,737 - Importing WmfImagePlugin
+2025-11-09 10:05:14,754 - Importing XbmImagePlugin
+2025-11-09 10:05:14,773 - Importing XpmImagePlugin
+2025-11-09 10:05:14,794 - Importing XVThumbImagePlugin
+2025-11-09 10:05:32,833 - User requested to open debug log.
+2025-11-09 10:05:39,691 - Quit requested. Stopping...
+2025-11-09 10:05:39,692 - Flushing all buffers to disk...
