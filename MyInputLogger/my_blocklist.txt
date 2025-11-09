@@ -1,0 +1,16 @@
+# This is your blocklist. Lines starting with # are comments.
+# Add "keyword:word" to block any title containing "word".
+# Add an exact title (like "My Bank - Login") to block just that window.
+keyword:password
+keyword:passwort
+keyword:login
+keyword:log in
+keyword:anmelden
+keyword:sign in
+keyword:email
+keyword:e-mail
+keyword:secure input
+keyword:bank
+keyword:admin
+keyword:keyring
+py - notepad++
