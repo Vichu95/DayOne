@@ -23,8 +23,8 @@ FLUSH_BUFFER_SIZE = 50
 
 # 4. BLOCKLIST_KEYWORDS (when to skip)
 BLOCKLIST_KEYWORDS = [
-    'password', 'passwort', 'email', 'e-mail',
-    'login', 'log in', 'anmelden', 'anmeldung',
+    'password', 'passwort', 'email', 'e-mail', 'whatsapp','settings','command prompt',
+    'login', 'log in', 'anmelden', 'anmeldung','search','file explorer',
     'sign in', 'secure input', 'bank', 'admin',
     'keyring', 'webmail', 'invest easy', 'nippon india',
     'py - notepad++', # Python scripts in notepad++
