@@ -12,9 +12,6 @@ import logging # For logging to a file
 DEBUG_MODE = True
 TOGGLE_MODIFIER = pynput.keyboard.Key.ctrl_l
 TOGGLE_KEY = pynput.keyboard.Key.f12
-
-# The one and only blocklist file
-BLOCKLIST_FILE = 'my_blocklist.txt'
 # --- END CUSTOMIZATION ---
 
 
@@ -27,10 +24,9 @@ current_icon_state = 'green'
 last_debugged_title = ""
 current_window_title = ""
 current_process_name = "" 
-
-# This tracks the last app we logged to for smart newlines
-last_logged_process = None
 dynamic_blocklist = set()
+# Tracks the last app we logged to for smart newlines
+last_logged_process = None 
 
 # --- DEBUG LOGGER SETUP ---
 DEBUG_LOG_FILE = 'debug.log'
@@ -63,10 +59,10 @@ def update_icon_state(new_state):
     elif new_state == 'red': icon.icon = create_image('red')
     elif new_state == 'orange': icon.icon = create_image('orange')
 
-# --- NEW: SMART LOGGING FUNCTION ---
+# --- NEW: RAW LOGGING FUNCTION ---
 def log_event(process_name, event_text):
     """
-    Appends the event text to the correct log file with smart newlines
+    Appends the raw event text to the correct log file with smart newlines
     for app-switching.
     """
     global last_logged_process
@@ -76,8 +72,7 @@ def log_event(process_name, event_text):
         
         # If we are logging to a new app, add a newline first
         if process_name != last_logged_process:
-            # Add a newline *unless* the event is already a newline
-            if event_text != "\n":
+            if event_text != "\n": # Don't add a double newline
                 prefix = "\n"
             last_logged_process = process_name
             
@@ -157,24 +152,27 @@ def is_window_blocked(window_title):
             
     return False, None
 
-# --- ON_PRESS (HEAVILY MODIFIED) ---
+# ***********************************
+# *** THIS FUNCTION IS MODIFIED ***
+# ***********************************
 def on_press(key):
     global is_recording, current_keys, last_debugged_title
     global current_window_title, current_process_name
 
-    # 1. CHECK HOTKEY
+    # 1. CHECK HOTKEY (Ctrl+F12)
+    # We check if F12 is pressed *while* Ctrl is already held.
     if key == TOGGLE_KEY and (TOGGLE_MODIFIER in current_keys or pynput.keyboard.Key.ctrl_r in current_keys):
         toggle_recording()
-        return
+        return # Don't log the hotkey
 
     # 2. ADD MODIFIERS TO SET
     if key in [pynput.keyboard.Key.ctrl_l, pynput.keyboard.Key.ctrl_r,
                pynput.keyboard.Key.alt_l, pynput.keyboard.Key.alt_r,
                pynput.keyboard.Key.shift, pynput.keyboard.Key.shift_r,
-               pynput.keyboard.Key.cmd, pynput.keyboard.Key.cmd_r]: # Added cmd/windows key
+               pynput.keyboard.Key.cmd, pynput.keyboard.Key.cmd_r]:
         current_keys.add(key)
-        # We will also log modifier keys
-    
+        # We also log modifiers below
+
     # 3. GET WINDOW INFO
     process_name, window_title = get_active_window_info()
     if not process_name: return 
@@ -197,7 +195,7 @@ def on_press(key):
     
     # 6. CHECK IF PAUSED
     if not is_recording:
-        update_icon_state('red') # Ensure icon is red
+        update_icon_state('red')
         return
 
     # 7. CHECK BLOCKLIST (Action)
@@ -207,11 +205,13 @@ def on_press(key):
     else:
         update_icon_state('green')
 
-    # 8. PROCESS KEYSTROKE (RAW LOGIC)
+    # 8. PROCESS KEYSTROKE (NEW RAW LOGIC)
     log_entry = ''
     try:
         # This is a normal character (e.g., 'h', 'a', '1')
         log_entry = key.char
+        if log_entry is None: # This happens on Ctrl+A
+             log_entry = f"[{key.name}]"
     except AttributeError:
         # This is a special key
         if key == pynput.keyboard.Key.enter:
@@ -221,12 +221,14 @@ def on_press(key):
         elif key == pynput.keyboard.Key.tab:
             log_entry = "\t"
         else:
-            # This logs [backspace], [delete], [ctrl_l], [shift], etc.
+            # This logs [backspace], [delete], [ctrl_l], [a], etc.
             log_entry = f"[{key.name}]"
     
     # 9. LOG THE EVENT
-    # We no longer use buffers or flushing
     log_event(process_name, log_entry)
+# ***********************************
+# *** END OF MODIFIED FUNCTION ***
+# ***********************************
 
 def on_release(key):
     global current_keys
@@ -281,7 +283,7 @@ def block_current_window(item):
         
         dynamic_blocklist.add(title_to_block.lower())
         
-        # No buffer to clear! This is much safer.
+        # No buffer to clear!
         
         if DEBUG_MODE: logging.info(f"Dynamically blocked: '{title_to_block}'")
         
@@ -352,9 +354,9 @@ if __name__ == "__main__":
     menu = pystray.Menu(*menu_items)
 
     icon = pystray.Icon(
-        'raw_keyboard_recorder_v23',
+        'raw_keyboard_recorder_v27',
         icon=create_image('green'),
-        title="Raw Keyboard Recorder (v23)",
+        title="Raw Keyboard Recorder (v27)",
         menu=menu
     )
 
