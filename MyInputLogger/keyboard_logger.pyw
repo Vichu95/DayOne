@@ -12,8 +12,6 @@ import logging # For logging to a file
 DEBUG_MODE = True
 TOGGLE_MODIFIER = pynput.keyboard.Key.ctrl_l
 TOGGLE_KEY = pynput.keyboard.Key.f12
-FLUSH_TRIGGERS = {'.', ',', '\n', '\t'}
-FLUSH_BUFFER_SIZE = 50
 
 # The one and only blocklist file
 BLOCKLIST_FILE = 'my_blocklist.txt'
@@ -25,14 +23,13 @@ is_recording = True
 icon = None
 listener = None
 current_keys = set() 
-app_buffers = {}
-buffer_lock = threading.Lock()
 current_icon_state = 'green'
 last_debugged_title = ""
 current_window_title = ""
 current_process_name = "" 
 
-# NEW: We only have one list now
+# This tracks the last app we logged to for smart newlines
+last_logged_process = None
 dynamic_blocklist = set()
 
 # --- DEBUG LOGGER SETUP ---
@@ -66,25 +63,31 @@ def update_icon_state(new_state):
     elif new_state == 'red': icon.icon = create_image('red')
     elif new_state == 'orange': icon.icon = create_image('orange')
 
-# --- BUFFER & FILE FUNCTIONS ---
-def flush_buffer_to_file(process_name):
-    if process_name not in app_buffers or not app_buffers[process_name]: return
-    log_filename = f"{process_name}.log"
+# --- NEW: SMART LOGGING FUNCTION ---
+def log_event(process_name, event_text):
+    """
+    Appends the event text to the correct log file with smart newlines
+    for app-switching.
+    """
+    global last_logged_process
     try:
-        buffer_content = app_buffers[process_name]
+        log_filename = f"{process_name}.log"
+        prefix = ""
+        
+        # If we are logging to a new app, add a newline first
+        if process_name != last_logged_process:
+            # Add a newline *unless* the event is already a newline
+            if event_text != "\n":
+                prefix = "\n"
+            last_logged_process = process_name
+            
         with open(log_filename, 'a', encoding='utf-8') as f:
-            f.write(buffer_content)
-        app_buffers[process_name] = ""
+            f.write(prefix + event_text)
+            
     except Exception as e:
         if DEBUG_MODE: logging.error(f"Error writing to {log_filename}: {e}")
 
-def flush_all_buffers():
-    if DEBUG_MODE: logging.info("Flushing all buffers to disk...")
-    with buffer_lock:
-        for process_name in app_buffers.keys():
-            flush_buffer_to_file(process_name)
-
-# --- BLOCKLIST FUNCTIONS (MODIFIED) ---
+# --- BLOCKLIST FUNCTIONS ---
 def load_dynamic_blocklist():
     """Loads all lines from my_blocklist.txt into one set."""
     global dynamic_blocklist
@@ -139,7 +142,6 @@ def get_active_window_info():
     except Exception as e:
         return None, None
 
-# --- IS_WINDOW_BLOCKED (MODIFIED) ---
 def is_window_blocked(window_title):
     """Checks if the title contains any line from the blocklist."""
     global dynamic_blocklist
@@ -149,15 +151,15 @@ def is_window_blocked(window_title):
         
     title_lower = window_title.lower()
 
-    # The one, simple check:
     for keyword in dynamic_blocklist:
         if keyword in title_lower:
             return True, f"Keyword: '{keyword}'"
             
     return False, None
 
+# --- ON_PRESS (HEAVILY MODIFIED) ---
 def on_press(key):
-    global is_recording, current_keys, app_buffers, last_debugged_title
+    global is_recording, current_keys, last_debugged_title
     global current_window_title, current_process_name
 
     # 1. CHECK HOTKEY
@@ -168,9 +170,11 @@ def on_press(key):
     # 2. ADD MODIFIERS TO SET
     if key in [pynput.keyboard.Key.ctrl_l, pynput.keyboard.Key.ctrl_r,
                pynput.keyboard.Key.alt_l, pynput.keyboard.Key.alt_r,
-               pynput.keyboard.Key.shift, pynput.keyboard.Key.shift_r]:
+               pynput.keyboard.Key.shift, pynput.keyboard.Key.shift_r,
+               pynput.keyboard.Key.cmd, pynput.keyboard.Key.cmd_r]: # Added cmd/windows key
         current_keys.add(key)
-
+        # We will also log modifier keys
+    
     # 3. GET WINDOW INFO
     process_name, window_title = get_active_window_info()
     if not process_name: return 
@@ -192,7 +196,9 @@ def on_press(key):
         last_debugged_title = window_title
     
     # 6. CHECK IF PAUSED
-    if not is_recording: return
+    if not is_recording:
+        update_icon_state('red') # Ensure icon is red
+        return
 
     # 7. CHECK BLOCKLIST (Action)
     if is_blocked:
@@ -201,29 +207,26 @@ def on_press(key):
     else:
         update_icon_state('green')
 
-    # 8. PROCESS KEYSTROKE
-    char_to_log = ''
-    is_backspace = False
-    try: char_to_log = key.char
+    # 8. PROCESS KEYSTROKE (RAW LOGIC)
+    log_entry = ''
+    try:
+        # This is a normal character (e.g., 'h', 'a', '1')
+        log_entry = key.char
     except AttributeError:
-        if key == pynput.keyboard.Key.space: char_to_log = ' '
-        elif key == pynput.keyboard.Key.enter: char_to_log = '\n'
-        elif key == pynput.keyboard.Key.tab: char_to_log = '\t'
-        elif key == pynput.keyboard.Key.backspace: is_backspace = True
-        else: return
+        # This is a special key
+        if key == pynput.keyboard.Key.enter:
+            log_entry = "\n"
+        elif key == pynput.keyboard.Key.space:
+            log_entry = " "
+        elif key == pynput.keyboard.Key.tab:
+            log_entry = "\t"
+        else:
+            # This logs [backspace], [delete], [ctrl_l], [shift], etc.
+            log_entry = f"[{key.name}]"
     
-    # 9. UPDATE BUFFER
-    should_flush = False
-    with buffer_lock:
-        if process_name not in app_buffers: app_buffers[process_name] = ""
-        if is_backspace:
-            if len(app_buffers[process_name]) > 0:
-                app_buffers[process_name] = app_buffers[process_name][:-1]
-        elif char_to_log:
-            app_buffers[process_name] += char_to_log
-            if char_to_log in FLUSH_TRIGGERS: should_flush = True
-            elif len(app_buffers[process_name]) % FLUSH_BUFFER_SIZE == 0: should_flush = True
-        if should_flush: flush_buffer_to_file(process_name)
+    # 9. LOG THE EVENT
+    # We no longer use buffers or flushing
+    log_event(process_name, log_entry)
 
 def on_release(key):
     global current_keys
@@ -244,9 +247,11 @@ def toggle_recording():
     global is_recording
     is_recording = not is_recording
     if DEBUG_MODE: logging.info(f"Recording toggled {'ON' if is_recording else 'OFF'}")
-    if is_recording: update_icon_state('green')
+    
+    # We just update the icon state. No buffers to flush.
+    if is_recording:
+        update_icon_state('green')
     else:
-        flush_all_buffers()
         update_icon_state('red')
     if icon: icon.update_menu()
 
@@ -256,35 +261,27 @@ def open_debug_log(item):
         try: os.startfile(DEBUG_LOG_FILE)
         except Exception as e: logging.error(f"Could not open debug log: {e}")
 
-# --- BLOCKLIST MENU FUNCTIONS (MODIFIED) ---
 def block_current_window(item):
     """Adds the current window's exact title to the blocklist file."""
-    global current_window_title, current_process_name, dynamic_blocklist, app_buffers, buffer_lock
+    global current_window_title, current_process_name, dynamic_blocklist
     
     title_to_block = current_window_title
-    proc_to_clear = current_process_name
     
     if not title_to_block:
         if DEBUG_MODE: logging.warning("Block request: No title found.")
         return
         
-    # Check the in-memory list (we must lowercase the title to check)
     if title_to_block.lower() in dynamic_blocklist:
         if DEBUG_MODE: logging.info(f"Block request: '{title_to_block}' is already in the list.")
         return
         
     try:
-        # Add the exact title to the file (it will be lowercased on next load)
         with open(BLOCKLIST_FILE, 'a', encoding='utf-8') as f:
             f.write(f"\n{title_to_block}")
         
-        # Add the lowercased version to the in-memory set
         dynamic_blocklist.add(title_to_block.lower())
         
-        with buffer_lock:
-            if proc_to_clear and proc_to_clear in app_buffers:
-                del app_buffers[proc_to_clear]
-                if DEBUG_MODE: logging.info(f"Cleared sensitive buffer for '{proc_to_clear}'")
+        # No buffer to clear! This is much safer.
         
         if DEBUG_MODE: logging.info(f"Dynamically blocked: '{title_to_block}'")
         
@@ -305,14 +302,23 @@ def reload_blocklist(item):
     """Reloads the blocklist file from disk."""
     if DEBUG_MODE: logging.info("User requested blocklist reload.")
     load_dynamic_blocklist()
-    # Force an update on the current window
     global last_debugged_title
     last_debugged_title = "" 
     if icon: icon.update_menu()
 
+def open_script_folder(item):
+    """Opens the script's current directory in Windows Explorer."""
+    try:
+        # __file__ is the path to the current script
+        script_dir = os.path.abspath(os.path.dirname(__file__))
+        os.startfile(script_dir)
+        if DEBUG_MODE: logging.info(f"Opening script folder: {script_dir}")
+    except Exception as e:
+        if DEBUG_MODE: logging.error(f"Could not open script folder: {e}")
+
 def on_quit():
     if DEBUG_MODE: logging.info("Quit requested. Stopping...")
-    flush_all_buffers()
+    # No buffers to flush
     if listener: listener.stop()
     if icon: icon.stop()
     if DEBUG_MODE: logging.info("--- Logger Stopped ---")
@@ -332,6 +338,7 @@ if __name__ == "__main__":
         pystray.MenuItem("Block Current Window", block_current_window),
         pystray.MenuItem("Open Blocklist File", open_blocklist_file),
         pystray.MenuItem("Reload Blocklist", reload_blocklist),
+        pystray.MenuItem("Open Log/Script Folder", open_script_folder), # Added
     ]
     if DEBUG_MODE:
         menu_items.extend([
@@ -345,9 +352,9 @@ if __name__ == "__main__":
     menu = pystray.Menu(*menu_items)
 
     icon = pystray.Icon(
-        'stateful_recorder_v15',
+        'raw_keyboard_recorder_v23',
         icon=create_image('green'),
-        title="Stateful Recorder (v15-Simple)",
+        title="Raw Keyboard Recorder (v23)",
         menu=menu
     )
 
