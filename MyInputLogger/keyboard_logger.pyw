@@ -8,14 +8,21 @@ import pystray
 from PIL import Image, ImageDraw
 import logging # For logging to a file
 
+# --- SCRIPT SETUP ---
+# NEW: Get the absolute path to the script's directory
+SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+
 # --- CUSTOMIZATION ---
 DEBUG_MODE = True
 TOGGLE_MODIFIER = pynput.keyboard.Key.ctrl_l
 TOGGLE_KEY = pynput.keyboard.Key.f12
+
+# The one and only blocklist file (now uses absolute path)
+BLOCKLIST_FILE = os.path.join(SCRIPT_DIR, 'my_blocklist.txt')
 # --- END CUSTOMIZATION ---
 
 
-# --- SCRIPT SETUP ---
+# --- SCRIPT SETUP (Rest) ---
 is_recording = True
 icon = None
 listener = None
@@ -25,11 +32,10 @@ last_debugged_title = ""
 current_window_title = ""
 current_process_name = "" 
 dynamic_blocklist = set()
-# Tracks the last app we logged to for smart newlines
 last_logged_process = None 
 
 # --- DEBUG LOGGER SETUP ---
-DEBUG_LOG_FILE = 'debug.log'
+DEBUG_LOG_FILE = os.path.join(SCRIPT_DIR, 'debug.log') # Uses absolute path
 if DEBUG_MODE:
     logging.basicConfig(
         level=logging.DEBUG,
@@ -38,6 +44,8 @@ if DEBUG_MODE:
         filemode='w'
     )
     logging.info("Debug Logger Started.")
+    logging.info(f"Script running from: {SCRIPT_DIR}")
+    logging.info(f"Blocklist file: {BLOCKLIST_FILE}")
 
 # --- ICON CREATION ---
 def create_image(color_name):
@@ -59,20 +67,20 @@ def update_icon_state(new_state):
     elif new_state == 'red': icon.icon = create_image('red')
     elif new_state == 'orange': icon.icon = create_image('orange')
 
-# --- NEW: RAW LOGGING FUNCTION ---
+# --- SMART LOGGING FUNCTION (MODIFIED) ---
 def log_event(process_name, event_text):
     """
     Appends the raw event text to the correct log file with smart newlines
     for app-switching.
     """
-    global last_logged_process
+    global last_logged_process, SCRIPT_DIR
     try:
-        log_filename = f"{process_name}.log"
+        # NEW: Log files are saved in the script's directory
+        log_filename = os.path.join(SCRIPT_DIR, f"{process_name}.log")
         prefix = ""
         
-        # If we are logging to a new app, add a newline first
         if process_name != last_logged_process:
-            if event_text != "\n": # Don't add a double newline
+            if event_text != "\n":
                 prefix = "\n"
             last_logged_process = process_name
             
@@ -90,31 +98,22 @@ def load_dynamic_blocklist():
     dynamic_blocklist.clear()
     
     try:
+        # Uses absolute path
         if not os.path.exists(BLOCKLIST_FILE):
             if DEBUG_MODE: logging.info(f"'{BLOCKLIST_FILE}' not found, creating with defaults.")
             default_rules = [
                 '# This is your blocklist. Lines starting with # are comments.',
                 '# Any window title *containing* a line from this file will be blocked.',
-                '# Add single words (like "password") or full titles.',
-                'password',
-                'passwort',
-                'login',
-                'log in',
-                'anmelden',
-                'sign in',
-                'email',
-                'e-mail',
-                'secure input',
-                'bank',
-                'admin',
-                'keyring'
+                'password', 'passwort', 'login', 'log in', 'anmelden',
+                'sign in', 'email', 'e-mail', 'secure input', 'bank',
+                'admin', 'keyring'
             ]
             with open(BLOCKLIST_FILE, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(default_rules))
 
         with open(BLOCKLIST_FILE, 'r', encoding='utf-8') as f:
             for line in f:
-                line = line.strip().lower() # Read all as lowercase
+                line = line.strip().lower()
                 if not line or line.startswith('#'):
                     continue
                 dynamic_blocklist.add(line)
@@ -138,32 +137,23 @@ def get_active_window_info():
         return None, None
 
 def is_window_blocked(window_title):
-    """Checks if the title contains any line from the blocklist."""
     global dynamic_blocklist
-    
     if not window_title:
         return True, "No Title"
-        
     title_lower = window_title.lower()
-
     for keyword in dynamic_blocklist:
         if keyword in title_lower:
             return True, f"Keyword: '{keyword}'"
-            
     return False, None
 
-# ***********************************
-# *** THIS FUNCTION IS MODIFIED ***
-# ***********************************
 def on_press(key):
     global is_recording, current_keys, last_debugged_title
     global current_window_title, current_process_name
 
-    # 1. CHECK HOTKEY (Ctrl+F12)
-    # We check if F12 is pressed *while* Ctrl is already held.
+    # 1. CHECK HOTKEY
     if key == TOGGLE_KEY and (TOGGLE_MODIFIER in current_keys or pynput.keyboard.Key.ctrl_r in current_keys):
         toggle_recording()
-        return # Don't log the hotkey
+        return
 
     # 2. ADD MODIFIERS TO SET
     if key in [pynput.keyboard.Key.ctrl_l, pynput.keyboard.Key.ctrl_r,
@@ -171,7 +161,6 @@ def on_press(key):
                pynput.keyboard.Key.shift, pynput.keyboard.Key.shift_r,
                pynput.keyboard.Key.cmd, pynput.keyboard.Key.cmd_r]:
         current_keys.add(key)
-        # We also log modifiers below
 
     # 3. GET WINDOW INFO
     process_name, window_title = get_active_window_info()
@@ -205,30 +194,20 @@ def on_press(key):
     else:
         update_icon_state('green')
 
-    # 8. PROCESS KEYSTROKE (NEW RAW LOGIC)
+    # 8. PROCESS KEYSTROKE (RAW LOGIC)
     log_entry = ''
     try:
-        # This is a normal character (e.g., 'h', 'a', '1')
         log_entry = key.char
         if log_entry is None: # This happens on Ctrl+A
              log_entry = f"[{key.name}]"
     except AttributeError:
-        # This is a special key
-        if key == pynput.keyboard.Key.enter:
-            log_entry = "\n"
-        elif key == pynput.keyboard.Key.space:
-            log_entry = " "
-        elif key == pynput.keyboard.Key.tab:
-            log_entry = "\t"
-        else:
-            # This logs [backspace], [delete], [ctrl_l], [a], etc.
-            log_entry = f"[{key.name}]"
+        if key == pynput.keyboard.Key.enter: log_entry = "\n"
+        elif key == pynput.keyboard.Key.space: log_entry = " "
+        elif key == pynput.keyboard.Key.tab: log_entry = "\t"
+        else: log_entry = f"[{key.name}]"
     
     # 9. LOG THE EVENT
     log_event(process_name, log_entry)
-# ***********************************
-# *** END OF MODIFIED FUNCTION ***
-# ***********************************
 
 def on_release(key):
     global current_keys
@@ -249,54 +228,39 @@ def toggle_recording():
     global is_recording
     is_recording = not is_recording
     if DEBUG_MODE: logging.info(f"Recording toggled {'ON' if is_recording else 'OFF'}")
-    
-    # We just update the icon state. No buffers to flush.
-    if is_recording:
-        update_icon_state('green')
-    else:
-        update_icon_state('red')
+    if is_recording: update_icon_state('green')
+    else: update_icon_state('red')
     if icon: icon.update_menu()
 
 def open_debug_log(item):
     if DEBUG_MODE:
         logging.info("User requested to open debug log.")
-        try: os.startfile(DEBUG_LOG_FILE)
+        try: os.startfile(DEBUG_LOG_FILE) # Uses absolute path
         except Exception as e: logging.error(f"Could not open debug log: {e}")
 
 def block_current_window(item):
-    """Adds the current window's exact title to the blocklist file."""
     global current_window_title, current_process_name, dynamic_blocklist
-    
     title_to_block = current_window_title
-    
     if not title_to_block:
         if DEBUG_MODE: logging.warning("Block request: No title found.")
         return
-        
     if title_to_block.lower() in dynamic_blocklist:
         if DEBUG_MODE: logging.info(f"Block request: '{title_to_block}' is already in the list.")
         return
-        
     try:
-        with open(BLOCKLIST_FILE, 'a', encoding='utf-8') as f:
+        with open(BLOCKLIST_FILE, 'a', encoding='utf-8') as f: # Uses absolute path
             f.write(f"\n{title_to_block}")
-        
         dynamic_blocklist.add(title_to_block.lower())
-        
-        # No buffer to clear!
-        
         if DEBUG_MODE: logging.info(f"Dynamically blocked: '{title_to_block}'")
-        
         update_icon_state('orange') 
         if icon: icon.update_menu()
-        
     except Exception as e:
         if DEBUG_MODE: logging.error(f"Failed to add to blocklist: {e}")
 
 def open_blocklist_file(item):
     """Opens my_blocklist.txt in the default text editor."""
     try:
-        os.startfile(BLOCKLIST_FILE)
+        os.startfile(BLOCKLIST_FILE) # Uses absolute path
     except Exception as e:
         if DEBUG_MODE: logging.error(f"Could not open blocklist file: {e}")
 
@@ -310,17 +274,15 @@ def reload_blocklist(item):
 
 def open_script_folder(item):
     """Opens the script's current directory in Windows Explorer."""
+    global SCRIPT_DIR
     try:
-        # __file__ is the path to the current script
-        script_dir = os.path.abspath(os.path.dirname(__file__))
-        os.startfile(script_dir)
-        if DEBUG_MODE: logging.info(f"Opening script folder: {script_dir}")
+        os.startfile(SCRIPT_DIR) # Uses absolute path
+        if DEBUG_MODE: logging.info(f"Opening script folder: {SCRIPT_DIR}")
     except Exception as e:
         if DEBUG_MODE: logging.error(f"Could not open script folder: {e}")
 
 def on_quit():
     if DEBUG_MODE: logging.info("Quit requested. Stopping...")
-    # No buffers to flush
     if listener: listener.stop()
     if icon: icon.stop()
     if DEBUG_MODE: logging.info("--- Logger Stopped ---")
@@ -328,10 +290,8 @@ def on_quit():
 # --- MAIN EXECUTION ---
 if __name__ == "__main__":
     load_dynamic_blocklist()
-
     listener_thread = threading.Thread(target=start_listener_thread, daemon=True)
     listener_thread.start()
-
     menu_items = [
         pystray.MenuItem(get_status_text, None, enabled=False),
         pystray.Menu.SEPARATOR,
@@ -340,7 +300,7 @@ if __name__ == "__main__":
         pystray.MenuItem("Block Current Window", block_current_window),
         pystray.MenuItem("Open Blocklist File", open_blocklist_file),
         pystray.MenuItem("Reload Blocklist", reload_blocklist),
-        pystray.MenuItem("Open Log/Script Folder", open_script_folder), # Added
+        pystray.MenuItem("Open Log/Script Folder", open_script_folder),
     ]
     if DEBUG_MODE:
         menu_items.extend([
@@ -352,14 +312,11 @@ if __name__ == "__main__":
         pystray.MenuItem("Quit", on_quit)
     ])
     menu = pystray.Menu(*menu_items)
-
     icon = pystray.Icon(
-        'raw_keyboard_recorder_v27',
+        'raw_keyboard_recorder_v28',
         icon=create_image('green'),
-        title="Raw Keyboard Recorder (v27)",
+        title="Raw Keyboard Recorder (v28)",
         menu=menu
     )
-
     if DEBUG_MODE: logging.info("--- Logger Started ---")
-    
     icon.run()
